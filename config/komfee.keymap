@@ -1,0 +1,180 @@
+#include <behaviors.dtsi>
+#include <dt-bindings/zmk/keys.h>
+
+#define COL 0
+#define QWE 1
+#define NAV 2
+#define SYM 3
+#define TRI 4
+
+&lt {
+    tapping-term-ms = <170>;
+};
+
+/ {
+    behaviors {
+
+#define KEYS_L 0 1 2 3 4 10 11 12 13 14 20 21 22 23 24
+#define KEYS_R 5 6 7 8 9 15 16 17 18 19 25 26 27 28 29
+#define KEYS_T 30 31 32 33
+
+#define MAKE_HRM(NAME,TRIGGER_POS) \
+    NAME { \
+        compatible = "zmk,behavior-hold-tap"; \
+        #binding-cells = <2>; \
+        flavor = "balanced"; \
+        tapping-term-ms = <170>; \
+        bindings = <&kp>, <&kp>; \
+        hold-trigger-key-positions = <TRIGGER_POS>; \
+        hold-trigger-on-release; \
+    };
+
+        MAKE_HRM(hrml, KEYS_L KEYS_T)
+        MAKE_HRM(hrmr, KEYS_R KEYS_T)
+
+        caps {
+            compatible = "zmk,behavior-hold-tap";
+            #binding-cells = <2>;
+            flavor = "tap-preferred";
+            tapping-term-ms = <200>;
+            bindings = <&caps_word>, <&kp>;
+        }
+    };
+
+    conditional_layers {
+        compatible = "zmk,conditional_layers";
+        tri_layer {
+            if-layers = <NAV SYM>;
+            then-layer = <TRI>
+        };
+    };
+
+    keymap {
+        compatible = "zmk,keymap";
+
+        #define CAPSHOLD &caps 0 CAPS
+        #define BTSEL &bt BT_SEL        
+        #define BTCLR &bt BT_CLR        
+        #define OUTTG &out OUT_TOG        
+
+        colemak {
+            /*
+             * -------------------------------    -------------------------------
+             * |  Q  |  W  |  F  |  P  |  B  |    |  J  |  L  |  U  |  Y  |  ;  |
+             * | A^g | R^a | S^c | T^s |  G  |    |  M  | N^s | E^c | I^a | O^g |
+             * |  Z  |  X  |  C  |  D  |  V  |    |  K  |  H  |  ,  |  .  |  /  |
+             * -----------------|LSHFT|SPC^NAV|  |RET^SYM|BKSPC|-----------------
+             *                  ---------------  ---------------             
+             */
+
+            bindings = <
+            &kp Q     &kp W     &kp F     &kp P     &kp B    
+                &kp J     &kp L     &kp U     &kp Y     &kp SEMI
+
+            &hrml LGUI A  &hrml LALT R  &hrml LCTRL S  &hrml LSHFT T  &kp G    
+                &kp M     &hrmr RSHFT N  &hrmr LCTRL E  &hrmr LALT I  &hrmr LGUI O
+
+            &kp Z     &kp X     &kp C     &kp D     &kp V    
+                &kp K     &kp H     &kp COMMA &kp DOT   &kp FSLH
+
+            &kp LSHIFT  &lt NAV SPACE    &lt SYM RET  &kp BSPC
+            >;
+        };
+
+        qwerty {
+            /*
+             * -------------------------------    -------------------------------
+             * |  Q  |  W  |  E  |  R  |  T  |    |  Y  |  U  |  I  |  O  |  P  |
+             * | A^g | S^a | D^c | F^s |  G  |    |  H  | J^s | K^c | L^a | ;^g |
+             * |  Z  |  X  |  C  |  V  |  B  |    |  N  |  M  |  ,  |  .  |  /  |
+             * -----------------|LSHFT|SPC^NAV|  |RET^SYM|BKSPC|-----------------
+             *                  ---------------  ---------------             
+             */
+
+            bindings = <
+            &kp Q     &kp W     &kp E     &kp R     &kp T
+                &kp Y     &kp U     &kp I     &kp O     &kp P
+
+            &hrml LGUI A  &hrml LALT S  &hrml LCTRL D  &hrml LSHFT F  &kp G
+                &kp H     &hrmr RSHFT J  &hrmr LCTRL K  &hrmr LALT L  &hrmr LGUI SEMI
+
+            &kp Z     &kp X     &kp C     &kp V     &kp B
+                &kp N     &kp M     &trans    &trans    &trans
+
+            &trans      &trans           &trans       &trans
+            >;
+        };
+
+        nav {
+            /*
+             * -------------------------------    -------------------------------
+             * |  1  |  2  |  3  |  4  |  5  |    |  6  |  7  |  8  |  9  |  0  |
+             * |CAPS | TAB |     |     |     |    |     |LEFT |DOWN | UP  |RIGHT|
+             * |LYOUT|     |     |     | ESC |    |     |HOME |PGDN |PGUP | END |
+             * -----------------|     |#######|  |RET^TRI| DEL |-----------------
+             *                  ---------------  ---------------             
+             */
+
+            bindings = <
+            &kp 1     &kp 2     &kp 3     &kp 4     &kp 5    
+                &kp 6     &kp 7     &kp 8     &kp 9     &kp 10
+
+            CAPSHOLD  &kp TAB   &none     &none     &none    
+                &none     &kp LEFT  &kp DOWN  &kp UP    &kp RIGHT
+
+            &none     &none     &none     &none     &none  
+                &none     &kp HOME  &kp PG_DN &kp PG_UP &kp END  
+
+            &none       &trans           &trans       &kp DEL
+            >;
+        };
+
+        symbol {
+            /*
+             * -------------------------------    -------------------------------
+             * |  '  |  <  |  >  |  "  |  .  |    |  &  |  _  |  [  |  ]  |  %  |
+             * |  !  |  -  |  +  |  =  |  #  |    |  |  |  :  |  (  |  )  |  ?  |
+             * |  ^  |  /  |  *  |  \  |  `  |    |  ~  |  $  |  {  |  }  |  @  |
+             * -----------------|LSHFT|SPC^TRI|  |#######|     |-----------------
+             *                  ---------------  ---------------             
+             */
+
+            bindings = <
+            &kp SQT   &kp LT    &kp GT    &kp DQT   &kp DOT
+                &kp AMPS  &kp UNDER &kp LBKT  &kp RBKT  &kp PRCNT
+
+            &kp EXCL  &kp MINUS &kp PLUS  &kp EQUAL &kp HASH
+                &kp PIPE  &kp COLON &kp LPAR  &kp RPAR  &kp QMARK
+
+            &kp CARET &kp FSLH  &kp ASTRK &kp BSLH  &kp GRAVE
+                &kp TILDE &kp DLLR  &kp LBRC  &kp RBRC  &kp AT
+
+            &trans      &trans           &trans       &none
+            >;
+        };
+
+        tri {
+            /*
+             * -------------------------------    -------------------------------
+             * | F1  | F2  | F3  | F4  | F5  |    | BT1 | BT2 | BT3 | BT4 | BT5 |
+             * | F6  | F7  | F8  | F9  | F10 |    |     |     |     |     |     |
+             * |OUTTG|RESET|BTCLR| F11 | F12 |    |     |     |     |     |     |
+             * -----------------|     |#######|  |#######|     |-----------------
+             *                  ---------------  ---------------             
+             */
+
+            bindings = <
+            &kp F1    &kp F2    &kp F3    &kp F4    &kp F5    
+                BTSEL 1   BTSEL 2   BTSEL 3   BTSEL 4   BTSEL 5   
+
+            &kp F6    &kp F7    &kp F8    &kp F9    &kp F10   
+                &none     &none     &none     &none     &none
+
+            OUTTG     &bootloader BTCLR   &kp F11   &kp F12   
+                &none     &none     &none     &none     &none
+
+            &none       &trans           &trans         &none
+            >;
+        };
+    };
+};
