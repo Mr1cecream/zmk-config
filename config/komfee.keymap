@@ -21,7 +21,7 @@
 #define KEYS_T 30 31 32 33
 
 #define MAKE_HRM(NAME,TRIGGER_POS) \
-    NAME { \
+    NAME: NAME { \
         compatible = "zmk,behavior-hold-tap"; \
         #binding-cells = <2>; \
         flavor = "balanced"; \
