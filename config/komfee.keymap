@@ -38,14 +38,14 @@
             flavor = "tap-preferred";
             tapping-term-ms = <200>;
             bindings = <&caps_word>, <&kp>;
-        }
+        };
     };
 
     conditional_layers {
         compatible = "zmk,conditional_layers";
         tri_layer {
             if-layers = <NAV SYM>;
-            then-layer = <TRI>
+            then-layer = <TRI>;
         };
     };
 
