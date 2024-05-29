@@ -34,7 +34,7 @@
         MAKE_HRM(hrml, KEYS_L KEYS_T)
         MAKE_HRM(hrmr, KEYS_R KEYS_T)
 
-        caps {
+        caps: caps_hold {
             compatible = "zmk,behavior-hold-tap";
             #binding-cells = <2>;
             flavor = "tap-preferred";
